@@ -81,11 +81,11 @@ class Board{
 
 		$sql = new Sql();
 		
-		if($this->getQtdPlaces() != "" && $this->getIdCompany() != ""){
+		if($this->getQtdPlaces() != "" ){
 
            
 			$sql->query("INSERT INTO tbBoards(idBoard, isActive,  idCompany, qtPlaces) 
-						VALUES (:IDBOARDS, :DESNOTE, :ISACTIVE, :IDCOMPANY, :QTDPLACES)", [
+						VALUES (:IDBOARDS, :ISACTIVE, :IDCOMPANY, :QTDPLACES)", [
 					":IDBOARD"=>$this->getIdBoard(),
 					":ISACTIVE"=>$this->getIsActive(),
 					":IDCOMPANY"=>$this->getIdCompany(),
