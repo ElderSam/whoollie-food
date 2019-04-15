@@ -1,18 +1,18 @@
 <script>
     $(function () {
-        $("#btnCreateProduct").click(function (e) {
+        $("#btnCreateBoard").click(function (e) {
             e.preventDefault();
 
-            if(!formValidate("formCreateProduct")) {
+            if(!formValidate("formCreateBoard")) {
                 return;
             };
 
-            let form = $(`#formCreateProduct`);
+            let form = $(`#formCreateBoard`);
             let formData = new FormData(form[0]);
 
             $.ajax({
                 type: "POST",
-                url: '/api/products',
+                url: '/api/boards',
                 data: formData,
                 contentType: false,
                 processData: false,
@@ -22,15 +22,15 @@
                         swal("Erro!", JSON.parse(data).message, "error");
                     } else {
                         $('#addModal').modal('hide');
-                        swal("Tudo certo!", "Produto adicionado com sucesso!", "success");
-                        loadProducts(); 
-                        $(`#formCreateProduct`).trigger("reset");
+                        swal("Tudo certo!", "Mesa adicionada com sucesso!", "success");
+                        loadBoards(); 
+                        $(`#formCreateBoard`).trigger("reset");
                     }
                     
                 },
                 error: function(data) {
 
-                    $(`#formCreateProduct`).trigger("reset");
+                    $(`#formCreateBoard`).trigger("reset");
                     console.log(`Erro! Mensagem: ${data}`);
                
                 }
@@ -38,30 +38,29 @@
 
         });
 
-        $("#formFilterProduct").on("submit", function(e) {
+        $("#formFilterBoard").on("submit", function(e) {
 
             e.preventDefault();
 
-            $.post('/api/filter/products', $(this).serialize(), function (data) {
+            $.post('/api/filter/boards', $(this).serialize(), function (data) {
 
-                $("#viewProduct").html("");
+                $("#viewBoard").html("");
 
                 JSON.parse(data).forEach(element => {
 
-                    $("#viewProduct").append(`
+                    $("#viewBoard").append(`
                     <div class="col-lg-3"> 
                         <div class="card shadow mb-4 border-left-${element.isActive == 1 ? "success" : "danger"}"> 
                             <div class="card-header py-3"> 
-                                <h6 class="m-0 font-weight-bold text-primary float-left"> ${element.desName} </h6>
-                                <span class="badge badge-success float-right">R$  ${element.vlUnity} </span>
+                                <h6 class="m-0 font-weight-bold text-primary float-left"> ${element.idBoard} </h6>
+                           
                             </div>
                             <div class="card-body text-center">
-                                <img class="fluid-img mb-1" src="/${element.desImagePath}" alt="" style="width: 100px; height: 100px;">
-                                <p> ${((element.desNote == "") ? "Produto sem descrição." : element.desNote)} </p>
-                                <a href="#" class="btn btn-info btn-circle" onclick='loadEditProduct(${element.idProduct});'>
+                        
+                                <a href="#" class="btn btn-info btn-circle" onclick='loadEditProduct(${element.idBoard});'>
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="#" class="btn btn-danger btn-circle" onclick="removeProduct(${element.idProduct});">
+                                <a href="#" class="btn btn-danger btn-circle" onclick="removeProduct(${element.idBoard});">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </div>
@@ -76,21 +75,21 @@
 
         });
 
-        $("#btnCancelCreateProduct").on('click', function() {
-            $(`#formCreateProduct`).trigger("reset");
+        $("#btnCancelCreateBoard").on('click', function() {
+            $(`#formCreateBoard`).trigger("reset");
         });
 
-        $("#btnEditProduct").on('click', function(e) {
+        $("#btnEditBoard").on('click', function(e) {
 
             e.preventDefault();
             
-            if(!formValidate("formEditProduct")) {
+            if(!formValidate("formEditBoard")) {
                 return;
             };
 
-            let form = $('#formEditProduct');
+            let form = $('#formEditBoard');
             let formData = new FormData(form[0]);
-            let idProduct = $("#formEditProduct").data('id');
+            let idBoard = $("#formEditBoard").data('id');
 
             $(form).find(':checkbox:checked, :radio:checked').each(function () {
                 formData.append(this.name, $(this).val());
@@ -98,7 +97,7 @@
 
             $.ajax({
                 type: "POST",
-                url: `/api/product/update/${idProduct}`,
+                url: `/api/board/update/${idBoard}`,
                 data: formData,
                 contentType: false,
                 processData: false,
@@ -107,17 +106,17 @@
                     if(JSON.parse(data).error) {
                         swal("Erro!", JSON.parse(data).message, "error");
                     } else {
-                        $('#editProductModal').modal('hide');
-                        swal("Tudo certo!", "Produto editado com sucesso!", "success");
-                        loadProducts(); 
-                        $(`#formEditProduct`).trigger("reset");
+                        $('#editBoardModal').modal('hide');
+                        swal("Tudo certo!", "Mesa editada com sucesso!", "success");
+                        loadBoards(); 
+                        $(`#formEditBoard`).trigger("reset");
                     }
                     
                 },
                 error: function(data) {
 
-                    $('#editProductModal').modal('hide');
-                    $(`#formEditProduct`).trigger("reset");
+                    $('#editBoardModal').modal('hide');
+                    $(`#formEditBoard`).trigger("reset");
                     console.log(`Erro! Mensagem: ${data}`);
                
                 }
@@ -125,20 +124,20 @@
 
         });
 
-        loadProducts();
-        loadCategoriesProducts();
+        loadBoards();
+        loadCategoriesBoards();
 
     });
 
-    function loadProducts() {
+    function loadBoards() {
 
-        $("#viewProduct").html("");
+        $("#viewBoard").html("");
 
-        $.getJSON('/api/products', function (data) {
+        $.getJSON('/api/boards', function (data) {
 
             data.forEach(element => {
 
-                $("#viewProduct").append(`
+                $("#viewBoard").append(`
                 <div class="col-lg-3"> 
                     <div class="card shadow mb-4 border-left-${element.isActive == 1 ? "success" : "danger"}"> 
                         <div class="card-header py-3"> 
@@ -148,10 +147,10 @@
                         <div class="card-body text-center">
                             <img class="fluid-img mb-1" src="/${element.desImagePath}" alt="" style="width: 100px; height: 100px;">
                             <p> ${((element.desNote == "") ? "Produto sem descrição." : element.desNote)} </p>
-                            <a href="#" class="btn btn-info btn-circle" onclick='loadEditProduct(${element.idProduct});'>
+                            <a href="#" class="btn btn-info btn-circle" onclick='loadEditBoard(${element.idBoard});'>
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="#" class="btn btn-danger btn-circle" onclick='removeProduct(${element.idProduct});'>
+                            <a href="#" class="btn btn-danger btn-circle" onclick='removeBoard(${element.idBoard});'>
                                 <i class="fas fa-trash"></i>
                             </a>
                         </div>
@@ -164,35 +163,35 @@
         });
     }
 
-    function loadEditProduct(idProduct) {
+    function loadEditBoard(idBoard) {
 
-        $.getJSON(`/api/products/${idProduct}`, function (data) {
+        $.getJSON(`/api/boards/${idBoard}`, function (data) {
 
-            $("#formEditProduct").data("id", idProduct);
+            $("#formEditBoard").data("id", idBoard);
 
-            $("#formEditProduct #desName").val(data[0].desName);
-            $("#formEditProduct #desNote").val(data[0].desNote);
-            $("#formEditProduct #vlUnity").val(data[0].vlUnity);
-            $("#formEditProduct #idProductCategory").val(data[0].idProductCategory).change();
+            $("#formEditBoard #desName").val(data[0].desName);
+            $("#formEditBoard #desNote").val(data[0].desNote);
+            $("#formEditBoard #vlUnity").val(data[0].vlUnity);
+            $("#formEditBoard #idBoardCategory").val(data[0].idBoardCategory).change();
 
             if (data[0].isActive == 1) {
-                $("#formEditProduct #checkYes").prop("checked",true);
+                $("#formEditBoard #checkYes").prop("checked",true);
             } else {
-                $("#formEditProduct #checkNo").prop("checked",true);
+                $("#formEditBoard #checkNo").prop("checked",true);
             }
 
-            $("#formEditProduct #desOldImagePath").val(data[0].desImagePath);
-            $("#formEditProduct #image").attr("src", data[0].desImagePath);
+            $("#formEditBoard #desOldImagePath").val(data[0].desImagePath);
+            $("#formEditBoard #image").attr("src", data[0].desImagePath);
 
         }).then(() => {
-            $("#editProductModal").modal();
+            $("#editBoardModal").modal();
         }).fail(function () {
             console.log("Rota não encontrada!");
         });
 
     }
 
-    function removeProduct(idProduct) {
+    function removeBoard(idBoard) {
 
         swal({
             title: "Você tem certeza ?",
@@ -203,11 +202,11 @@
         }).then((willDelete) => {
 
                 if (willDelete) {
-                    $.post("/api/product/delete/" + idProduct, function (data) {
+                    $.post("/api/board/delete/" + idBoard, function (data) {
                         swal("Deletado com sucesso!", {
                             icon: "success",
                         });
-                        loadProducts();
+                        loadBoards();
                     }).fail(function () {
                         console.log("Rota não encontrada!");
                     });
@@ -218,26 +217,6 @@
 
     }
 
-    function loadCategoriesProducts() {
-        $.getJSON('/api/categories/products', function (data) {
-
-            data.forEach(element => {
-                $("#formCreateProduct #idProductCategory").append(`
-                    <option value="${element.idProductCategory}">${element.desName}</option>
-                `);
-
-                $("#formEditProduct #idProductCategory").append(`
-                    <option value="${element.idProductCategory}">${element.desName}</option>
-                `);
-
-                $("#formFilterProduct #idProductCategory").append(`
-                    <option value="${element.idProductCategory}">${element.desName}</option>
-                `);
-            });
-
-        }).fail(function () {
-            console.log("Rota não encontrada!");
-        });
-    }
+  
 
 </script>
