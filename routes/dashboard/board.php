@@ -8,7 +8,7 @@ $app->get('/comandas', function($request, $response, $args) {
 	User::verifyLogin(false);
 
 	if(Employee::verifyPrivileges("orders")){
-        renderPage("boards", "boards", false);
+        renderPage("boards", "boards", false, "board");
     } else {
         renderPage("errors", "errorPrivileges", false);
     }
