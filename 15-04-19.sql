@@ -22,6 +22,7 @@ DROP TABLE IF EXISTS `tbboards`;
 CREATE TABLE IF NOT EXISTS `tbboards` (
   `idBoard` int(11) NOT NULL AUTO_INCREMENT,
   `idCompany` int(11) NOT NULL,
+  `vlBoard` text NOT NULL,
   `qtPlaces` int(11) NOT NULL,
   `isActive` tinyint(4) NOT NULL DEFAULT '1',
   `dtRegister` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -29,10 +30,12 @@ CREATE TABLE IF NOT EXISTS `tbboards` (
   PRIMARY KEY (`idBoard`),
   KEY `fk_tbMesas_tbEmpresas1_idx` (`idCompany`),
   CONSTRAINT `fk_tbMesas_tbEmpresas1` FOREIGN KEY (`idCompany`) REFERENCES `tbcompanies` (`idCompany`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- Copiando dados para a tabela u672842222_food.tbboards: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `tbboards` DISABLE KEYS */;
+REPLACE INTO `tbboards` (`idBoard`, `idCompany`, `vlBoard`, `qtPlaces`, `isActive`, `dtRegister`, `isDeleted`) VALUES
+	(1, 1, '1', 4, 1, '2019-04-13 14:55:22', 0);
 /*!40000 ALTER TABLE `tbboards` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela u672842222_food.tbcompanies
@@ -74,6 +77,29 @@ REPLACE INTO `tbdepartments` (`idDepartment`, `idCompany`, `desName`, `dtRegiste
 	(1, 1, 'TI', '2019-04-01 21:43:39', 0, 0);
 /*!40000 ALTER TABLE `tbdepartments` ENABLE KEYS */;
 
+-- Copiando estrutura para tabela u672842222_food.tbdevices
+DROP TABLE IF EXISTS `tbdevices`;
+CREATE TABLE IF NOT EXISTS `tbdevices` (
+  `idDevice` int(11) NOT NULL AUTO_INCREMENT,
+  `idCompany` int(11) NOT NULL,
+  `desName` text NOT NULL,
+  `desLogin` text NOT NULL,
+  `desPassword` text NOT NULL,
+  `isActive` tinyint(4) NOT NULL DEFAULT '0',
+  `dtRegister` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `isDeleted` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`idDevice`),
+  KEY `FK1_companys` (`idCompany`),
+  CONSTRAINT `FK1_companys` FOREIGN KEY (`idCompany`) REFERENCES `tbcompanies` (`idCompany`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+-- Copiando dados para a tabela u672842222_food.tbdevices: ~0 rows (aproximadamente)
+/*!40000 ALTER TABLE `tbdevices` DISABLE KEYS */;
+REPLACE INTO `tbdevices` (`idDevice`, `idCompany`, `desName`, `desLogin`, `desPassword`, `isActive`, `dtRegister`, `isDeleted`) VALUES
+	(2, 1, 'Mesa - 01', 'mesa01', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 0, '2019-04-15 22:02:39', 0),
+	(3, 1, 'Mesa - 02', 'mesa01', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 0, '2019-04-15 22:05:03', 0);
+/*!40000 ALTER TABLE `tbdevices` ENABLE KEYS */;
+
 -- Copiando estrutura para tabela u672842222_food.tbemployees
 DROP TABLE IF EXISTS `tbemployees`;
 CREATE TABLE IF NOT EXISTS `tbemployees` (
@@ -114,23 +140,27 @@ DROP TABLE IF EXISTS `tborders`;
 CREATE TABLE IF NOT EXISTS `tborders` (
   `idOrder` int(11) NOT NULL AUTO_INCREMENT,
   `idCompany` int(11) NOT NULL,
-  `idEmployee` int(11) NOT NULL,
+  `idUser` int(11) NOT NULL,
   `idBoard` int(11) NOT NULL,
+  `desName` varchar(50) NOT NULL,
   `vlDiscount` decimal(3,1) DEFAULT '0.0',
-  `vlStatus` int(11) NOT NULL DEFAULT '0',
+  `vlStatus` int(11) DEFAULT '0',
   `dtRegister` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `isDeleted` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`idOrder`),
-  KEY `fk_tbComandas_tbFuncionarios1_idx` (`idEmployee`),
+  KEY `fk_tbComandas_tbFuncionarios1_idx` (`idUser`),
   KEY `fk_tbComandas_tbEmpresas1_idx` (`idCompany`),
   KEY `fk_tbComandas_tbMesas1_idx` (`idBoard`),
   CONSTRAINT `fk_tbComandas_tbEmpresas1` FOREIGN KEY (`idCompany`) REFERENCES `tbcompanies` (`idCompany`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tbComandas_tbFuncionarios1` FOREIGN KEY (`idEmployee`) REFERENCES `tbemployees` (`idEmployee`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tbComandas_tbFuncionarios1` FOREIGN KEY (`idUser`) REFERENCES `tbemployees` (`idUser`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_tbComandas_tbMesas1` FOREIGN KEY (`idBoard`) REFERENCES `tbboards` (`idBoard`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
--- Copiando dados para a tabela u672842222_food.tborders: ~0 rows (aproximadamente)
+-- Copiando dados para a tabela u672842222_food.tborders: ~1 rows (aproximadamente)
 /*!40000 ALTER TABLE `tborders` DISABLE KEYS */;
+REPLACE INTO `tborders` (`idOrder`, `idCompany`, `idUser`, `idBoard`, `desName`, `vlDiscount`, `vlStatus`, `dtRegister`, `isDeleted`) VALUES
+	(3, 1, 1, 1, 'Matheus', 0.0, 0, '2019-04-13 15:45:40', 0),
+	(4, 1, 1, 1, 'Elder', 0.0, 2, '2019-04-15 21:02:53', 0);
 /*!40000 ALTER TABLE `tborders` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela u672842222_food.tbprivileges
@@ -179,20 +209,29 @@ CREATE TABLE IF NOT EXISTS `tbproducts` (
   KEY `fk_tbProdutos_tbEmpresas1_idx` (`idCompany`),
   CONSTRAINT `fk_tbProdutos_tbCategoriasProdutos1` FOREIGN KEY (`idProductCategory`) REFERENCES `tbproductscategories` (`idProductCategory`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_tbProdutos_tbEmpresas1` FOREIGN KEY (`idCompany`) REFERENCES `tbcompanies` (`idCompany`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
 
--- Copiando dados para a tabela u672842222_food.tbproducts: ~9 rows (aproximadamente)
+-- Copiando dados para a tabela u672842222_food.tbproducts: ~18 rows (aproximadamente)
 /*!40000 ALTER TABLE `tbproducts` DISABLE KEYS */;
 REPLACE INTO `tbproducts` (`idProduct`, `idCompany`, `idProductCategory`, `vlUnity`, `desName`, `desNote`, `desImagePath`, `isActive`, `dtRegister`, `isDeleted`) VALUES
-	(12, 1, 8, 0.00, 'jhjkh', 'jkhkjhkj', 'res/uploads/products/1554344672_UseCase Diagram0.jpg', 1, '2019-04-03 23:24:32', 0),
-	(13, 1, 9, 890.00, 'Diego', '20938', 'res/admin/img/sem_foto.png', 1, '2019-04-03 23:27:55', 0),
-	(14, 1, 8, 98.00, 'Lanche da Ma', 'kljlk', 'res/admin/img/sem_foto.png', 1, '2019-04-03 23:28:44', 0),
-	(15, 1, 8, 897.00, 'djhd', 'ksaljdlkasjdklajsdklasjdklajskldjalksdjaskldjalksd', 'res/admin/img/sem_foto.png', 1, '2019-04-03 23:29:24', 0),
-	(16, 1, 8, 994.69, 'czc', 'jnjknj', 'res/admin/img/sem_foto.png', 1, '2019-04-03 23:31:52', 0),
-	(17, 1, 9, 14.00, 'X - Burguer', 'Big burguer, x-burguer salada especial da Villa, x', 'res/uploads/products/1555029182_unnamed.jpg', 1, '2019-04-04 07:49:24', 0),
-	(18, 1, 8, 70.00, 'X Burguer 2', 'skjdkalsjdk', 'res/uploads/products/1554386244_x-burguer bem feito.png', 1, '2019-04-04 10:57:24', 0),
-	(19, 1, 9, 89.00, 'jkhkj', 'hkjhkjh', 'res/admin/img/sem_foto.png', 1, '2019-04-04 10:58:34', 0),
-	(20, 1, 8, 78.00, 'kjhjhj', 'hjhjk', 'res/admin/img/sem_foto.png', 1, '2019-04-05 19:04:20', 0);
+	(12, 1, 8, 0.00, 'jhjkh', 'jkhkjhkj', 'res/uploads/products/1554344672_UseCase Diagram0.jpg', 1, '2019-04-03 23:24:32', 1),
+	(13, 1, 11, 890.00, 'Diego', '20938', 'res/uploads/products/1555108931_unnamed.jpg', 1, '2019-04-03 23:27:55', 0),
+	(14, 1, 8, 98.00, 'Lanche da Ma', 'kljlk', 'res/uploads/products/1555030650_images.jpg', 1, '2019-04-03 23:28:44', 0),
+	(15, 1, 8, 897.00, 'djhd', 'ksaljdlkasjdklajsdklasjdklajskldjalksdjaskldjalksd', 'res/admin/img/sem_foto.png', 1, '2019-04-03 23:29:24', 1),
+	(16, 1, 8, 994.69, 'czc', 'jnjknj', 'res/admin/img/sem_foto.png', 1, '2019-04-03 23:31:52', 1),
+	(17, 1, 9, 14.00, 'X - Burguer', 'Big burguer, x-burguer salada especial da Vi', 'res/admin/img/sem_foto.png', 1, '2019-04-04 07:49:24', 0),
+	(18, 1, 8, 70.50, 'X Burguer 2', 'skjdkalsjdk', 'res/uploads/products/1554386244_x-burguer bem feito.png', 1, '2019-04-04 10:57:24', 0),
+	(19, 1, 9, 89.00, 'jkhkj', 'hkjhkjh', 'res/uploads/products/1555030500_download-2.jpeg', 1, '2019-04-04 10:58:34', 1),
+	(20, 1, 8, 78.00, 'kjhjhj', 'hjhjk', 'res/admin/img/sem_foto.png', 1, '2019-04-05 19:04:20', 1),
+	(21, 1, 9, 3156.00, 'Baconn', 'ajsdkj', 'res/uploads/products/1555107351_images.jpg', 0, '2019-04-12 19:15:51', 0),
+	(22, 1, 10, 123.00, 'Testeeeee', 'testeett', 'res/uploads/products/1555107392_adesivo-lanchonete-lanche-hamburguer-artesanal-fast-food-hd-adesivo-food.jpg', 0, '2019-04-12 19:16:32', 0),
+	(23, 1, 11, 25.00, 'X Tudo', 'teste', 'res/uploads/products/1555114808_images.jpg', 1, '2019-04-12 21:20:08', 0),
+	(24, 1, 11, 20.00, 'X Salada', 'salada', 'res/uploads/products/1555114819_images.jpg', 1, '2019-04-12 21:20:19', 0),
+	(25, 1, 11, 15.00, 'Teste1', 'teste1', 'res/uploads/products/1555114834_adesivo-lanchonete-lanche-hamburguer-artesanal-fast-food-hd-adesivo-food.jpg', 1, '2019-04-12 21:20:34', 0),
+	(26, 1, 11, 15.00, 'teste2', 'teste3', 'res/uploads/products/1555114849_adesivo-lanchonete-lanche-hamburguer-artesanal-fast-food-hd-adesivo-food.jpg', 1, '2019-04-12 21:20:49', 0),
+	(27, 1, 8, 12.00, 'teste4', 'teste4', 'res/admin/img/sem_foto.png', 1, '2019-04-12 21:29:57', 0),
+	(28, 1, 8, 10.00, 'teste5', 'teste5', 'res/admin/img/sem_foto.png', 1, '2019-04-12 21:30:07', 0),
+	(29, 1, 8, 20.00, 'teste6', 'teste6', 'res/admin/img/sem_foto.png', 1, '2019-04-12 21:30:17', 0);
 /*!40000 ALTER TABLE `tbproducts` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela u672842222_food.tbproductscategories
@@ -203,6 +242,7 @@ CREATE TABLE IF NOT EXISTS `tbproductscategories` (
   `desName` varchar(45) NOT NULL,
   `dtRegister` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `isDeleted` tinyint(4) NOT NULL DEFAULT '0',
+  `isActive` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`idProductCategory`),
   KEY `fk_tbProductsCategories_tbCompanies1_idx` (`idCompany`),
   CONSTRAINT `fk_tbProductsCategories_tbCompanies1` FOREIGN KEY (`idCompany`) REFERENCES `tbcompanies` (`idCompany`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -210,11 +250,11 @@ CREATE TABLE IF NOT EXISTS `tbproductscategories` (
 
 -- Copiando dados para a tabela u672842222_food.tbproductscategories: ~4 rows (aproximadamente)
 /*!40000 ALTER TABLE `tbproductscategories` DISABLE KEYS */;
-REPLACE INTO `tbproductscategories` (`idProductCategory`, `idCompany`, `desName`, `dtRegister`, `isDeleted`) VALUES
-	(8, 1, 'Bebidas', '2019-04-03 19:13:57', 0),
-	(9, 1, 'Massas', '2019-04-03 19:14:01', 0),
-	(10, 1, 'PorÃ§Ãµes', '2019-04-03 23:33:04', 0),
-	(11, 1, 'Teste', '2019-04-04 10:58:56', 0);
+REPLACE INTO `tbproductscategories` (`idProductCategory`, `idCompany`, `desName`, `dtRegister`, `isDeleted`, `isActive`) VALUES
+	(8, 1, 'Bebidas', '2019-04-03 19:13:57', 0, 1),
+	(9, 1, 'Massas', '2019-04-03 19:14:01', 0, 1),
+	(10, 1, 'PorÃ§Ãµes', '2019-04-03 23:33:04', 0, 1),
+	(11, 1, 'Teste', '2019-04-04 10:58:56', 0, 1);
 /*!40000 ALTER TABLE `tbproductscategories` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela u672842222_food.tbrequests
@@ -229,10 +269,18 @@ CREATE TABLE IF NOT EXISTS `tbrequests` (
   PRIMARY KEY (`idRequest`),
   KEY `fk_tbPedidos_tbComandas_idx` (`idOrder`),
   CONSTRAINT `fk_tbPedidos_tbComandas` FOREIGN KEY (`idOrder`) REFERENCES `tborders` (`idOrder`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
--- Copiando dados para a tabela u672842222_food.tbrequests: ~0 rows (aproximadamente)
+-- Copiando dados para a tabela u672842222_food.tbrequests: ~7 rows (aproximadamente)
 /*!40000 ALTER TABLE `tbrequests` DISABLE KEYS */;
+REPLACE INTO `tbrequests` (`idRequest`, `idOrder`, `desNote`, `vlStatus`, `dtRegister`, `isDeleted`) VALUES
+	(1, 3, NULL, 0, '2019-04-13 16:08:39', 0),
+	(2, 3, NULL, 0, '2019-04-13 16:08:53', 0),
+	(3, 3, NULL, 0, '2019-04-13 16:09:14', 0),
+	(4, 3, NULL, 0, '2019-04-13 16:09:28', 0),
+	(5, 3, NULL, 0, '2019-04-13 16:10:09', 0),
+	(6, 3, NULL, 0, '2019-04-13 16:10:18', 0),
+	(7, 4, NULL, 0, '2019-04-15 21:03:20', 0);
 /*!40000 ALTER TABLE `tbrequests` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela u672842222_food.tbrequestsproducts
@@ -250,10 +298,24 @@ CREATE TABLE IF NOT EXISTS `tbrequestsproducts` (
   KEY `fk_tbPedidos_has_tbProdutos_tbPedidos1_idx` (`idRequest`),
   CONSTRAINT `fk_tbPedidos_has_tbProdutos_tbPedidos1` FOREIGN KEY (`idRequest`) REFERENCES `tbrequests` (`idRequest`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_tbPedidos_has_tbProdutos_tbProdutos1` FOREIGN KEY (`idProduct`) REFERENCES `tbproducts` (`idProduct`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
--- Copiando dados para a tabela u672842222_food.tbrequestsproducts: ~0 rows (aproximadamente)
+-- Copiando dados para a tabela u672842222_food.tbrequestsproducts: ~13 rows (aproximadamente)
 /*!40000 ALTER TABLE `tbrequestsproducts` DISABLE KEYS */;
+REPLACE INTO `tbrequestsproducts` (`idRequestProduct`, `idRequest`, `idProduct`, `qtProduct`, `vlUnity`, `dtRegister`, `isDeleted`) VALUES
+	(1, 4, 25, 1, 15.00, '2019-04-13 16:09:28', 0),
+	(2, 4, 29, 1, 20.00, '2019-04-13 16:09:28', 0),
+	(3, 4, 14, 1, 98.00, '2019-04-13 16:09:28', 0),
+	(4, 4, 28, 1, 10.00, '2019-04-13 16:09:28', 0),
+	(5, 4, 27, 1, 12.00, '2019-04-13 16:09:28', 0),
+	(6, 5, 13, 1, 890.00, '2019-04-13 16:10:09', 0),
+	(7, 5, 27, 1, 12.00, '2019-04-13 16:10:09', 0),
+	(8, 6, 13, 2, 890.00, '2019-04-13 16:10:18', 0),
+	(9, 6, 25, 2, 15.00, '2019-04-13 16:10:18', 0),
+	(10, 6, 29, 1, 20.00, '2019-04-13 16:10:18', 0),
+	(11, 7, 13, 1, 890.00, '2019-04-15 21:03:20', 0),
+	(12, 7, 14, 1, 98.00, '2019-04-15 21:03:20', 0),
+	(13, 7, 27, 1, 12.00, '2019-04-15 21:03:20', 0);
 /*!40000 ALTER TABLE `tbrequestsproducts` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela u672842222_food.tbusers
