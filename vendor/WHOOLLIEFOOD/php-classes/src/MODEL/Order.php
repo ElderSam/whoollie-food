@@ -37,7 +37,11 @@ class Order {
 
     public function setIdOrder($value) {
         $this->idOrder = $value;
-        $_SESSION["Order"]["id"] = $value;
+        $_SESSION["Order"]["id"] = $this->idOrder;
+    }
+
+    public function setVlStatus($value) {
+        $this->vlStatus = $value;
     }
 
     public function getIdOrder() {
@@ -68,12 +72,20 @@ class Order {
         return $this->desName;
     }
 
-    public function orderIsOpen() {
+    public function getVlStatus() {
+        return $this->vlStatus;
+    }
 
-        if (isset($_SESSION["Order"]["id"])) 
-            return ["open" => true];
-        else 
+    public function openedOrder() {
+
+        if (isset($_SESSION["Order"]["id"])) {
+            if ($_SESSION["Order"]["id"] != "")
+                return ["open" => true];
+            else
+                return ["open" => false];
+        } else { 
             return ["open" => false];
+        }
 
     }
 
@@ -91,7 +103,29 @@ class Order {
 
         $this->setIdOrder($idOrder);
 
+        return json_encode([
+            "idOrder"=>$this->getIdOrder(),
+            "idBoard"=>$this->getIdBoard(),
+            "desName"=>$this->getDesName()
+        ]);
+
     }
+
+    public function closeOrder() {
+
+        $sql = new Sql();
+
+        $sql->query("UPDATE tbOrders SET
+                    vlStatus = :VLSTATUS
+                    WHERE
+                    idOrder = :IDORDER", [
+                        ":VLSTATUS"=>$this->getVlStatus(),
+                        ":IDORDER"=>$this->getIdOrder()
+                    ]);
+
+        $this->setIdOrder("");
+        
+    }   
 
 }
 

@@ -4,150 +4,88 @@ namespace WHOOLLIEFOOD\MODEL;
 
 use \WHOOLLIEFOOD\DB\Sql;
 
-class Board{
+class Board {
 
-	private $idBoard;
+    private $idBoard;
     private $idCompany;
-    private $qtPlaces;
-    private $isActive;
-	private $isDeleted;
+	private $vlBoard;
+	private $qtPlaces;
+	
+	private $isActive;
 
     public function __construct(){
-
 		$this->idCompany = $_SESSION['User']['idCompany'];
-
-    }
-    
-	public private getIdBoard() {
-		return $this->$idBoard;
 	}
 
-	public void setIdBoard($idBoard) {
+	public function getIdBoard() {
+		return $this->idBoard;
+	}
+
+	public function setIdBoard($idBoard) {
 		$this->idBoard = $idBoard;
 	}
 
-	public private getIdCompany() {
+	public function getIdCompany() {
 		return $this->idCompany;
 	}
 
-	public void setIdCompany($idCompany) {
+	public function setIdCompany($idCompany) {
 		$this->idCompany = $idCompany;
 	}
 
-	public private getQtPlaces() {
+	public function getVlBoard() {
+		return $this->vlBoard;
+	}
+
+	public function setVlBoard($vlBoard) {
+		$this->vlBoard = $vlBoard;
+	}
+
+	public function getQtPlaces() {
 		return $this->qtPlaces;
 	}
 
-	public void setQtPlaces($qtPlaces) {
+	public function setQtPlaces($qtPlaces) {
 		$this->qtPlaces = $qtPlaces;
 	}
 
-	public private getIsActive() {
+
+	public function getIsActive() {
 		return $this->isActive;
 	}
 
-	public void setIsActive($isActive) {
+	public function setIsActive($isActive) {
 		$this->isActive = $isActive;
-	}
+    }
+    
+    public function createBoard() {
 
-	public private getIsDeleted() {
-		return $this->isDeleted;
-	}
+        $sql = new Sql();
+        
+		$idBoard = $sql->query("INSERT INTO tbBoards(idCompany, vlBoard, qtPlaces) 
+						    VALUES (:IDCOMPANY, :VLBOARD, :QTPLACES)", [
+                            ":IDCOMPANY"=>$this->getIdCompany(),
+                            ":VLBOARD"=>$this->getVlBoard(),
+                            ":QTPLACES"=>$this->getQtPlaces()
+                           
+							]);
 
-	public void setIsDeleted($isDeleted) {
-		$this->isDeleted = $isDeleted;
-	}
+       $this->setIdBoard($idBoard);
 
-
-
-	public function listAll(){
-
-		$sql = new Sql();
-
-		return json_encode($sql->select("
-			SELECT * 
-			FROM tbBoards
-			WHERE 
-			isDeleted = :ISDELETED AND
-			idCompany = :IDCOMPANY
-			ORDER BY idBoard ASC", [
-				":ISDELETED" => 0,
-				":IDCOMPANY" => $this->getIdCompany()
-			]));
-
-	}
-
-	public function createBoard(){
-
-		$sql = new Sql();
 		
-		if($this->getQtdPlaces() != "" ){
-
-           
-			$sql->query("INSERT INTO tbBoards(idBoard, isActive,  idCompany, qtPlaces) 
-						VALUES (:IDBOARDS, :ISACTIVE, :IDCOMPANY, :QTDPLACES)", [
-					":IDBOARD"=>$this->getIdBoard(),
-					":ISACTIVE"=>$this->getIsActive(),
-					":IDCOMPANY"=>$this->getIdCompany(),
-					":QTDPLACES"=>$this->getQtdPlaces()
-				]);
-		}
-
-	}
-
-	public function editBoard($id) {
-
-		$sql = new Sql();
-		
-		if($this->getIdCompany() != "" && $this->getQtdPlaces() != ""){
-
-			$sql->query("UPDATE tbBoard SET  
-							isActive = :ISACTIVE, 
-							idCompany = :IDCOMPANY,
-							idBoardCategory = :QTDPLACES
-						 WHERE
-                         idBoard = :IDBOARD", [
-				
-					":ISACTIVE"=>$this->getIsActive(),
-					":IDCOMPANY"=>$this->getIdCompany(),
-					":QTDPLACES"=>$this->getQtdPlaces(),
-					":IDBOARD"=>$id
-				]);
-		}
-
-	}
-
-	public function deleteBoard($idBoard){
+    }
+    
+    public function listAllBoards() {
 
         $sql = new Sql();
 
-        return $sql->query("UPDATE tbBoards SET isDeleted = :ISDELETED
-                WHERE idCompany = :IDCOMPANY AND idBoard = :IDBOARD", [
-                ":ISDELETED"=>$this->getIsDeleted(),
-                ":IDCOMPANY"=>$this->getIdCompany(),
-                ":IDBOARD"=>$idBoard                       
-            ]);
-    
-	} 
-	
-	public function setAllPropertiesById($idBoard) {
+        return json_encode($sql->select("
+							SELECT *
+							 FROM tbBoards
+                             ORDER BY vlBoard ASC"));
 
-		$sql = new Sql();
+    }
 
-        $res = $sql->select("SELECT * FROM tbBoards 
-                WHERE idCompany = :IDCOMPANY AND 
-				idBoard = :IDBOARD", [
-                ":IDCOMPANY"=>$this->getIdCompany(),
-                ":IDBOARD"=>$idBoard                       
-			])[0];
-		
-		$this->setIdBoard($idBoard);
-		$this->setIsActive($res['isActive']);
-		$this->setQtdPlaces($res['qtdPlaces']);
-		
-
-
-	}
 
 }
 
