@@ -62,16 +62,27 @@ class Board {
 
         $sql = new Sql();
         
-		$idBoard = $sql->query("INSERT INTO tbBoards(idCompany, vlBoard, qtPlaces) 
-						    VALUES (:IDCOMPANY, :VLBOARD, :QTPLACES)", [
-                            ":IDCOMPANY"=>$this->getIdCompany(),
-                            ":VLBOARD"=>$this->getVlBoard(),
-                            ":QTPLACES"=>$this->getQtPlaces()
-                           
-							]);
+		$idBoard = $sql->query("
+					INSERT INTO tbBoards(idCompany, vlBoard, qtPlaces) 
+					VALUES (:IDCOMPANY, :VLBOARD, :QTPLACES)", [
+					":IDCOMPANY"=>$this->getIdCompany(),
+					":VLBOARD"=>$this->getVlBoard(),
+					":QTPLACES"=>$this->getQtPlaces()
+					
+					]);
 
        $this->setIdBoard($idBoard);
 
+	   	if ($idBoard > 0) {
+			return json_encode([
+				'error' => false
+			]);
+	   	} else {
+			return json_encode([
+				'error' => true,
+				'message' => 'Erro ao cadastrar a mesa!',
+			]);
+	   }
 		
     }
     
@@ -79,10 +90,9 @@ class Board {
 
         $sql = new Sql();
 
-        return json_encode($sql->select("
-							SELECT *
-							 FROM tbBoards
-                             ORDER BY vlBoard ASC"));
+        return json_encode($sql->select("SELECT *
+                             FROM tbBoards
+                             ORDER BY vlBoard"));
 
     }
 
