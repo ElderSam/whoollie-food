@@ -9,22 +9,22 @@ $app->post('/api/boards', function($request, $response, $args) {
     
     $input = $request->getParsedBody();
 	
-    $boards = new Board();
+    $board = new Board();
     
-    $boards->setDesName($input["desName"]);
-	$boards->setDesLogin($input["desLogin"]);
-	$boards->setDesPassword($input["desPassword"]);
+    $board->setVlBoard($input["vlBoard"]);
+	$board->setQtPlaces($input["qtPlaces"]);
 
-    $boards->createBoard();
+
+    $board->createBoard();
 	
 });
 
 
-$app->get('/api/boardss', function($request, $response, $args) {
+$app->get('/api/boards', function($request, $response, $args) {
 
     User::verifyLogin();
 
-    echo $boards->listAllBoards();
+    echo $board->listAllBoards();
 	
 });
 
