@@ -15,7 +15,7 @@ $app->post('/api/boards', function($request, $response, $args) {
 	$board->setQtPlaces($input["qtPlaces"]);
 
 
-    $board->createBoard();
+    echo $board->createBoard();
 	
 });
 

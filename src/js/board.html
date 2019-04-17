@@ -5,46 +5,18 @@
         $.post("/api/boards", $("#formCreateBoard").serialize(), function (data) {
     
 
-            if(JSON.parse(data).error) {
-                swal("Tudo certo!", "Dispositivo cadastrado com sucesso!", "success");
+            if(!JSON.parse(data).error) {
+                swal("Tudo certo!", "Mesa cadastrada com sucesso!", "success");
                 $("#formCreateBoard")[0].reset();
                 $("#addBoardModal").modal("toggle");
             } else {
                 console.log(JSON.parse(data).message);
+                swal("Erro!", "Mesa não cadastrada!", "error");
             }
          
             
         });
     
-    }
-
-    // para carregar mesas
-    $(function () {
-        loadBoards();
-    });
-        
-    function loadBoards() {
-
-        $("#viewBoards").html("");
-
-        $.getJSON('/api/boards', function (data) {
-
-            data.forEach(element => {
-
-                $("#viewBoards").append(`<div class="col-sm-3 mb-2">
-                    <div class="card shadow">
-                       <div class="card-body">
-                        <h5 class="card-title font-weight-bold">${element.vlBoard}</h5>
-                    </div>
-                    
-                    </div>
-                    </div>`);
-
-            });
-
-        }).fail(function () {
-            console.log("Rota não encontrada!");
-        });
     }
     
     </script>
