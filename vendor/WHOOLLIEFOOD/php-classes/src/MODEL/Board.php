@@ -90,11 +90,45 @@ class Board {
 
         $sql = new Sql();
 
-        return json_encode($sql->select("SELECT *
+        return json_encode($sql->select("
+		                     SELECT *
                              FROM tbBoards
                              ORDER BY vlBoard"));
 
-    }
+	}
+	
+	public function editBoard($id) {
+
+		$sql = new Sql();
+		
+		if($this->getVlBoard() != "" && $this->getQtPlaces() != "" && $this->getIdCompany() != "" ){
+	
+			$sql->query("UPDATE tbBoards SET
+							vlBoard = :VLBOARD, 
+							qtPlaces = :QTPLACES
+					
+						 WHERE
+							 idBoard = :IDBOARD", [
+					":VLBOARD"=>$this->getVlBoard(),
+					":QTPLACES"=>$this->getQtPlaces(),
+					":IDBOARD"=>$id
+				]);
+		}
+	
+	}
+	
+	public function deleteBoard($idBoard){
+	
+		$sql = new Sql();
+	
+		return $sql->query("UPDATE tbBoards SET isDeleted = :ISDELETED
+				WHERE idCompany = :IDCOMPANY AND idBoard = :IDBOARD", [
+				":ISDELETED"=>$this->getIsDeleted(),
+				":IDCOMPANY"=>$this->getIdCompany(),
+				":IDBOARD"=>$idBoard                       
+			]);
+	
+	} 
 
 
 }
