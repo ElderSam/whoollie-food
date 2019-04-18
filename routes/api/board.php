@@ -1,30 +1,17 @@
-<?php
+<?php 
 
 use \WHOOLLIEFOOD\MODEL\User;
-use \WHOOLLIEFOOD\MODEL\Board;
+use \WHOOLLIEFOOD\MODEL\Employee;
 
-$app->post('/api/boards', function($request, $response, $args) {
-
-    User::verifyLogin();
+$app->get('/mesas', function($request, $response, $args) {
     
-    $input = $request->getParsedBody();
-	
-    $board = new Board();
+    User::verifyLogin(false);
     
-    $board->setVlBoard($input["vlBoard"]);
-	$board->setQtPlaces($input["qtPlaces"]);
-
-
-    echo $board->createBoard();
-	
-});
-
-
-$app->get('/api/boards', function($request, $response, $args) {
-
-    User::verifyLogin();
-
-    echo $board->listAllBoards();
+    if(Employee::verifyPrivileges("employees")){
+        renderPage("boards", "listBoards", false, "board");
+    } else {
+        renderPage("errors", "errorPrivileges", false);
+    }
 	
 });
 
